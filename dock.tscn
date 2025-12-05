@@ -29,6 +29,23 @@ text = "Methods"
 [node name="MethodsTree" type="Tree" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
+columns = 2
+
+[node name="HSeparator3" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Label3" type="Label" parent="."]
+layout_mode = 2
+text = "Signals"
+
+[node name="SignalsTree" type="Tree" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator4" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
 
 [node name="Label2" type="Label" parent="."]
 layout_mode = 2
