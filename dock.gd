@@ -1,7 +1,8 @@
 @tool
 extends VBoxContainer
 
-@onready var lbl_script = $ScriptLabel
+@onready var lbl_script = $HBoxContainer/ScriptLabel
+@onready var window_toggle = $HBoxContainer/WindowToggleButton
 @onready var lbl_class = $ClassLabel
 @onready var lbl_base = $BaseLabel
 @onready var methods_tree = $MethodsTree
@@ -15,6 +16,7 @@ var last_signal := []
 signal method_selected(index: int)
 signal properties_selected(index: int)
 signal signal_selected(index: int)
+signal toggle_window_requested(active: bool)
 
 func _ready():
 	#print("dock.gd READY — signals:", get_signal_list())
@@ -25,6 +27,12 @@ func _ready():
 	methods_tree.connect("cell_selected", Callable(self, "_on_method_clicked"))
 	props_tree.connect("cell_selected", Callable(self, "_on_properties_clicked"))
 	signals_tree.connect("cell_selected", Callable(self, "_on_signal_clicked"))
+
+	window_toggle.toggle_mode = true
+	window_toggle.toggled.connect(_on_window_toggle)
+
+func _on_window_toggle(active: bool):
+	emit_signal("toggle_window_requested", active)
 
 func _on_method_clicked():
 	var item = methods_tree.get_selected()
@@ -86,7 +94,6 @@ func update_info(info: Dictionary):
 		item2.set_text(0, p["name"])
 		last_properties.append(p)
 
-
 	# --- Signals ---
 	signals_tree.clear()
 	var root3 = signals_tree.create_item()
@@ -96,3 +103,20 @@ func update_info(info: Dictionary):
 		var item3 = signals_tree.create_item(root3)
 		item3.set_text(0, s["name"])
 		last_signal.append(s)
+
+func set_window_toggle_state(state: bool) -> void:
+	if not window_toggle:
+		return
+
+	# ToggleButton の場合（最も正しい動作）
+	if window_toggle is Button:
+		window_toggle.set_pressed_no_signal(state)
+		return
+
+	# 代替：ボタンにメソッドがあれば使う
+	if window_toggle.has_method("set_pressed_no_signal"):
+		window_toggle.set_pressed_no_signal(state)
+		return
+
+	# 最後の手段：プロパティを直接セット（安全な Object.set）
+	window_toggle.set("pressed", state)
